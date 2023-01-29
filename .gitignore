@@ -1,0 +1,9 @@
+/services/database/conf/
+/services/database/data/
+/services/database/logs/
+/services/database/init/
+*/.idea
+*/node_modules
+**/node_modules
+.idea
+/volumes

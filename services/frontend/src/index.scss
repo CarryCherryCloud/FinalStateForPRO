@@ -1,0 +1,212 @@
+$primary-color: #202325;
+$primary-background: #090a0a;
+$primary-font: #979c9e;
+$primary-font-hoverd: #fff;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.container-main {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: 1px solid black;
+
+    a {
+      padding: 5px;
+      margin: 5px 0 0 5px;
+      border: 1px solid black;
+      border-radius: 5px;
+    }
+  }
+}
+
+.container-auth {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .wrap-auth {
+    width: 300px;
+    padding: 50px;
+    border: 1px solid black;
+  }
+}
+
+.game-chat {
+  display: flex;
+  flex-direction: column;
+
+  border: 1px black solid;
+  min-width: 300px;
+
+  .game-messages {
+    flex-grow: 1;
+
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-snap-type: y mandatory;
+    max-height: 395px;
+
+    >div {
+      margin-left: 10px;
+
+      &:last-child {
+        scroll-snap-align: start;
+      }
+    }
+  }
+
+  .game-message {
+    font-weight: bold;
+
+    &-oponent {
+      @extend .game-message;
+      color: crimson;
+    }
+  }
+
+  .game-message-input {
+    display: flex;
+    align-content: flex-end;
+    justify-content: center;
+    margin: 10px;
+
+    button {
+      margin-left: 5px
+    }
+  }
+}
+
+.game-container{
+ display: inline-flex;
+ margin: 25px;
+}
+
+.game-board{
+  min-width:460px;
+
+  .cell {
+    height:50px;
+    width:50px;
+    display:inline-block;
+    border:1px solid #ddd;
+    margin-right:5px;
+
+    .gamePiece {
+        width:40px;
+        height:40px;
+        margin:5px 0 0 5px;
+        border-radius:40px;
+        cursor:pointer;
+        position:relative;
+
+      &:after {
+        content: ' ';
+        position: absolute;
+        right: 0;
+        top: -5px;
+        height: 38px;
+        width: 38px;
+        border-radius: 40px;
+        pointer-events:none;
+      }
+    }
+
+    &.cell-b {
+      .gamePiece {
+        background-color:#444;
+        
+      }
+      &.k {
+        .gamePiece {
+          &:after {
+            background-color:#444;
+            border:1px solid white;
+          }
+        }
+      }
+    }
+
+    &.cell-r {
+      .gamePiece {
+        background-color:#e26b6b;
+  
+      }
+      &.k {
+        .gamePiece {
+          &:after {
+            background-color:#e26b6b;
+            border:1px solid white;
+          }
+        }
+      }
+    }
+
+    &.cell-ab, &.cell-ar {
+      .gamePiece {
+        background-color: #6a6aff;
+        box-shadow: 0px 0px 24px #2983f3;
+      }
+      &.k {
+        .gamePiece {
+          &:after {
+            background-color: #6a6aff;   
+            border:1px solid white;   
+          }
+        }
+      }
+    }
+
+    &.cell-h {
+      background-color:#6a6aff!important;
+    }
+    
+    &.m {
+      .gamePiece {
+        background-color:green;
+      }
+    }
+  }
+
+  .row {
+    height:50px;
+    margin-bottom:5px;
+    
+    &:nth-child(odd) {
+      .cell:nth-child(odd) {
+        background-color:#ddd;
+      }
+      .cell:nth-child(even) {
+        background-color:transparent;
+      }
+    }
+    &:nth-child(even) {
+      .cell:nth-child(even) {
+        background-color:#ddd;
+      }
+      .cell:nth-child(odd) {
+        background-color:transparent;
+      }
+    }
+  }
+  
+}

@@ -1,0 +1,105 @@
+version: "3.9"
+x-app:
+  &default-app
+  restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
+  tty: true
+  # env_file:
+  #   - ".env"
+
+services:
+  db:
+    <<: *default-app
+    build:
+      context: "./services/database"
+      dockerfile: Dockerfile
+      target: ${PROJECT_ENV}
+    container_name: CarryCherryCloud-db
+    ports:
+      - "${DOCKER_DB_PORT_OUT}:${DB_PORT}"
+    environment:
+      - MYSQL_DATABASE=${DB_MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${DB_MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${DB_MYSQL_USER}
+      - MYSQL_PASSWORD=${DB_MYSQL_PASSWORD}
+    volumes:
+      - ./services/database/init_scripts:/docker-entrypoint-initdb.d
+      - ./volumes/mysql/data:/var/lib/mysql
+
+  dbms:
+    image: adminer
+    container_name: CarryCherryCloud-dbms
+    ports:
+      - "${DOCKER_DBMS_PORT_OUT}:${DBMS_PORT}"
+    depends_on:
+      - db
+
+  backend:
+    <<: *default-app
+    build:
+      context: "./services/backend"
+      dockerfile: Dockerfile
+      target: ${PROJECT_ENV}
+    container_name: CarryCherryCloud-backend
+    ports:
+      - "${DOCKER_BACKEND_PORT_OUT}:${BACKEND_PORT}"
+    depends_on:
+      - db
+    environment:
+      - API_PORT=${DOCKER_BACKEND_PORT_OUT}
+      - ENGINE_URL=${ENGINE_DOMAIN}:${DOCKER_ENGINE_PORT_OUT}
+      - SESSION_SECRET=${BACKEND_SESSION_SECRET}
+      - ORIGIN = ${BACKEND_ORIGIN}
+      - MYSQL_HOST=${DOCKER_DB_MYSQL_HOST}
+      - MYSQL_PORT=${DB_PORT}
+      - MYSQL_DATABASE=${DB_MYSQL_DATABASE}
+      - MYSQL_USER=${DB_MYSQL_USER}
+      - MYSQL_PASSWORD=${DB_MYSQL_PASSWORD}
+    volumes:
+      - ./services/backend:/app
+
+  frontend:
+    <<: *default-app
+    build:
+      context: "./services/frontend"
+      dockerfile: Dockerfile
+      target: ${PROJECT_ENV}
+    container_name: CarryCherryCloud-frontend
+    ports:
+      - "${DOCKER_FRONTEND_PORT_OUT}:${FRONTEND_PORT}"
+    depends_on:
+      - backend
+    environment:
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - BACKEND_URL=${BACKEND_DOMAIN}:${DOCKER_BACKEND_PORT_OUT}
+    volumes:
+      - ./services/frontend:/app
+
+  engine:
+    <<: *default-app
+    build:
+      context: "./services/checkers_engine/demo"
+      dockerfile: Dockerfile
+      target: ${PROJECT_ENV}
+    container_name: CarryCherryCloud-engine
+    ports:
+      - "${DOCKER_ENGINE_PORT_OUT}:${ENGINE_PORT}"
+    depends_on:
+      - backend
+    volumes:
+      - ./services/checkers_engine/demo:/app
+      - ./volumes/gradle-cache:/home/gradle/.gradle
+
+#  jasmine:
+#    <<: *default-app
+#    build:
+#      context: "./services/jasmine"
+#      dockerfile: Dockerfile
+#    container_name: CarryCherryCloud-jasmine
+#    ports:
+#      - "9003:9003"
+#    depends_on:
+#      - engine
+#      - backend
+#      - db
+#      - dbms
+#      - frontend
